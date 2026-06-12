@@ -23,15 +23,15 @@
           </div>
           <div class="vector-inputs">
             <label>
-              <span>ωx</span>
+              <span class="math-inline omega-label" data-latex="\omega_{\textstyle 1}"></span>
               <input id="omegaX" type="number" step="0.01" value="0.04" />
             </label>
             <label>
-              <span>ωy</span>
-              <input id="omegaY" type="number" step="0.01" value="2.15" />
+              <span class="math-inline omega-label" data-latex="\omega_{\textstyle 2}"></span>
+              <input id="omegaY" type="number" step="0.01" value="4.30" />
             </label>
             <label>
-              <span>ωz</span>
+              <span class="math-inline omega-label" data-latex="\omega_{\textstyle 3}"></span>
               <input id="omegaZ" type="number" step="0.01" value="0.06" />
             </label>
           </div>
@@ -45,7 +45,7 @@
         <section class="control-section">
           <div class="section-heading">
             <h2>模拟</h2>
-            <span id="simTime">t = 0.00 s</span>
+            <span id="simTime"></span>
           </div>
           <div class="button-row">
             <button id="playPause" class="primary-button">
@@ -56,20 +56,6 @@
               <i data-lucide="rotate-ccw"></i>
             </button>
           </div>
-          <label class="range-control">
-            <span>速度倍率</span>
-            <strong id="speedValue">1.0×</strong>
-            <input id="speedSlider" type="range" min="0.1" max="3" step="0.1" value="1" />
-          </label>
-          <label class="range-control">
-            <span>轨迹长度</span>
-            <strong id="trailValue">2200</strong>
-            <input id="trailSlider" type="range" min="400" max="5000" step="100" value="2200" />
-          </label>
-          <label class="switch-row">
-            <span>显示守恒椭球</span>
-            <input id="ellipsoidToggle" type="checkbox" checked />
-          </label>
         </section>
 
         <section class="control-section">
@@ -78,9 +64,9 @@
             <span>主轴系</span>
           </div>
           <div class="inertia-grid">
-            <div><span>I1</span><strong>1.00</strong></div>
-            <div><span>I2</span><strong>2.00</strong></div>
-            <div><span>I3</span><strong>3.20</strong></div>
+            <div><span class="math-inline" data-latex="I_1"></span><strong>1.00</strong></div>
+            <div><span class="math-inline" data-latex="I_2"></span><strong>2.00</strong></div>
+            <div><span class="math-inline" data-latex="I_3"></span><strong>3.20</strong></div>
           </div>
         </section>
 
@@ -94,7 +80,7 @@
             <strong id="momentumDrift">0.00 ppm</strong>
           </div>
           <div class="metric">
-            <span>L² / 2T</span>
+            <span class="math-inline ratio-label" data-latex="L^2 / 2T"></span>
             <strong id="ratioValue">2.00</strong>
           </div>
           <div class="metric">
@@ -103,11 +89,6 @@
           </div>
         </section>
 
-        <section class="equation-panel" aria-label="方程">
-          <p>I1ω̇1 = (I2 - I3)ω2ω3</p>
-          <p>I2ω̇2 = (I3 - I1)ω3ω1</p>
-          <p>I3ω̇3 = (I1 - I2)ω1ω2</p>
-        </section>
       </aside>
 
       <section class="stage">
@@ -115,24 +96,35 @@
           <div class="view-header">
             <div>
               <h2>刚体姿态</h2>
-              <span id="omegaReadout">ω = (0.04, 2.15, 0.06)</span>
+              <span id="omegaReadout"></span>
             </div>
-            <span class="axis-key"><b class="x"></b>x <b class="y"></b>y <b class="z"></b>z</span>
+            <span class="axis-key">
+              <b class="x"></b><span class="math-inline" data-latex="x"></span>
+              <b class="y"></b><span class="math-inline" data-latex="y"></span>
+              <b class="z"></b><span class="math-inline" data-latex="z"></span>
+            </span>
           </div>
-          <div id="bodyViewport" class="viewport"></div>
+          <div id="bodyViewport" class="viewport">
+            <div
+              class="equation-overlay"
+              data-latex="\begin{aligned}I_1\dot{\omega}_1&=(I_2-I_3)\omega_2\omega_3\\I_2\dot{\omega}_2&=(I_3-I_1)\omega_3\omega_1\\I_3\dot{\omega}_3&=(I_1-I_2)\omega_1\omega_2\end{aligned}"
+            ></div>
+          </div>
         </div>
 
         <div class="view view-phase">
           <div class="view-header">
             <div>
               <h2>角速度空间</h2>
-              <span>动能椭球 ∩ 角动量椭球</span>
+              <span>T与L²守恒曲面</span>
             </div>
-            <button id="focusTrajectory" class="icon-button" aria-label="聚焦轨迹">
-              <i data-lucide="crosshair"></i>
-            </button>
           </div>
-          <div id="omegaViewport" class="viewport"></div>
+          <div id="omegaViewport" class="viewport">
+            <div
+              class="equation-overlay"
+              data-latex="\begin{aligned}2T&=I_1\omega_1^2+I_2\omega_2^2+I_3\omega_3^2\\L^2&=I_1^2\omega_1^2+I_2^2\omega_2^2+I_3^2\omega_3^2\end{aligned}"
+            ></div>
+          </div>
         </div>
       </section>
     </main>

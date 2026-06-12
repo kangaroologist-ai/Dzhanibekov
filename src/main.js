@@ -1,14 +1,23 @@
 import './styles.css';
+import 'katex/dist/katex.min.css';
 import * as THREE from 'three';
-import { createIcons, Crosshair, Pause, Play, RotateCcw } from 'lucide';
+import katex from 'katex';
+import { createIcons, Pause, Play, RotateCcw } from 'lucide';
 import { INERTIA, PRESETS, implicitMidpointStep, invariants, stepWithSubsteps } from './physics.js';
 
-createIcons({ icons: { Crosshair, Pause, Play, RotateCcw } });
+createIcons({ icons: { Pause, Play, RotateCcw } });
 
 const BASE_STEP = 0.004;
+const DEFAULT_SPEED = 1;
+const DEFAULT_TRAIL = 2200;
 const SAMPLE_INTERVAL = 0.018;
 const TWO_PI = Math.PI * 2;
 const LIGHT_DIRECTION = new THREE.Vector3(-0.35, 0.75, 0.52).normalize();
+const KATEX_OPTIONS = {
+  throwOnError: false,
+  strict: 'ignore',
+  trust: false,
+};
 
 const els = {
   bodyViewport: document.querySelector('#bodyViewport'),
@@ -18,12 +27,6 @@ const els = {
   omegaZ: document.querySelector('#omegaZ'),
   playPause: document.querySelector('#playPause'),
   resetSimulation: document.querySelector('#resetSimulation'),
-  speedSlider: document.querySelector('#speedSlider'),
-  speedValue: document.querySelector('#speedValue'),
-  trailSlider: document.querySelector('#trailSlider'),
-  trailValue: document.querySelector('#trailValue'),
-  ellipsoidToggle: document.querySelector('#ellipsoidToggle'),
-  focusTrajectory: document.querySelector('#focusTrajectory'),
   simTime: document.querySelector('#simTime'),
   energyDrift: document.querySelector('#energyDrift'),
   momentumDrift: document.querySelector('#momentumDrift'),
@@ -35,8 +38,8 @@ const els = {
 
 const state = {
   running: true,
-  speed: Number(els.speedSlider.value),
-  maxTrail: Number(els.trailSlider.value),
+  speed: DEFAULT_SPEED,
+  maxTrail: DEFAULT_TRAIL,
   omega: readOmegaInputs(),
   bodyQuaternion: new THREE.Quaternion(),
   initialInvariants: null,
@@ -68,6 +71,18 @@ const ellipsoidState = {
   bounds: 2.5,
 };
 
+const bodyAxisLabels = createMathLabels(els.bodyViewport, {
+  x: 'x',
+  y: 'y',
+  z: 'z',
+});
+const omegaAxisLabels = createMathLabels(els.omegaViewport, {
+  x: '\\omega_{\\textstyle 1}',
+  y: '\\omega_{\\textstyle 2}',
+  z: '\\omega_{\\textstyle 3}',
+});
+
+renderStaticMath();
 resetSimulation();
 bindControls();
 
@@ -137,26 +152,41 @@ function bindControls() {
 
   els.resetSimulation.addEventListener('click', resetSimulation);
 
-  els.speedSlider.addEventListener('input', () => {
-    state.speed = Number(els.speedSlider.value);
-    els.speedValue.textContent = `${state.speed.toFixed(1)}×`;
-  });
-
-  els.trailSlider.addEventListener('input', () => {
-    state.maxTrail = Number(els.trailSlider.value);
-    els.trailValue.textContent = String(state.maxTrail);
-    trimTrail();
-  });
-
-  els.ellipsoidToggle.addEventListener('change', renderOmegaView);
-  els.focusTrajectory.addEventListener('click', focusOmegaCamera);
-
   els.presetButtons.forEach((button) => {
     button.addEventListener('click', () => {
       applyPreset(button.dataset.preset);
       resetSimulation();
     });
   });
+}
+
+function renderStaticMath() {
+  document.querySelectorAll('[data-latex]').forEach((element) => {
+    renderLatex(element, element.dataset.latex, element.classList.contains('equation-overlay'));
+  });
+}
+
+function renderLatex(element, latex, displayMode = false) {
+  if (!element || element.dataset.renderedLatex === latex) return;
+
+  katex.render(latex, element, {
+    ...KATEX_OPTIONS,
+    displayMode,
+  });
+  element.dataset.renderedLatex = latex;
+}
+
+function createMathLabels(container, labels) {
+  return Object.fromEntries(
+    Object.entries(labels).map(([key, latex]) => {
+      const label = document.createElement('span');
+      label.className = `canvas-math-label label-${key}`;
+      label.setAttribute('aria-hidden', 'true');
+      renderLatex(label, latex);
+      container.appendChild(label);
+      return [key, label];
+    }),
+  );
 }
 
 function applyPreset(name) {
@@ -231,12 +261,15 @@ function updateDiagnostics() {
   const bodyMiddleAxis = new THREE.Vector3(0, 1, 0).applyQuaternion(state.bodyQuaternion);
   const flipAngle = THREE.MathUtils.radToDeg(state.initialAxis.angleTo(bodyMiddleAxis));
 
-  els.simTime.textContent = `t = ${state.time.toFixed(2)} s`;
+  renderLatex(els.simTime, `t=${state.time.toFixed(2)}\\,\\mathrm{s}`);
   els.energyDrift.textContent = formatDrift(energyDrift);
   els.momentumDrift.textContent = formatDrift(momentumDrift);
   els.ratioValue.textContent = current.ratio.toFixed(4);
   els.flipAngle.textContent = `${flipAngle.toFixed(0)}°`;
-  els.omegaReadout.textContent = `ω = (${state.omega.x.toFixed(3)}, ${state.omega.y.toFixed(3)}, ${state.omega.z.toFixed(3)})`;
+  renderLatex(
+    els.omegaReadout,
+    `\\boldsymbol{\\omega}=(${state.omega.x.toFixed(3)},\\ ${state.omega.y.toFixed(3)},\\ ${state.omega.z.toFixed(3)})`,
+  );
 }
 
 function relativeDrift(value, reference) {
@@ -333,17 +366,14 @@ function renderOmegaView() {
   view.scale = Math.min(view.width, view.height) / (ellipsoidState.bounds * 2.95);
   clearView(view);
 
-  if (els.ellipsoidToggle.checked) {
-    drawEllipsoidSurface(view, ellipsoidState.momentumAxes, '#3478d9', 0.14);
-    drawEllipsoidSurface(view, ellipsoidState.energyAxes, '#2f9d69', 0.16);
-    drawEllipsoidWireframe(view, ellipsoidState.momentumAxes, '#3478d9', 0.22);
-    drawEllipsoidWireframe(view, ellipsoidState.energyAxes, '#2f9d69', 0.24);
-  }
+  drawEllipsoidSurface(view, ellipsoidState.momentumAxes, '#3478d9', 0.14);
+  drawEllipsoidSurface(view, ellipsoidState.energyAxes, '#2f9d69', 0.16);
+  drawEllipsoidWireframe(view, ellipsoidState.momentumAxes, '#3478d9', 0.22);
+  drawEllipsoidWireframe(view, ellipsoidState.energyAxes, '#2f9d69', 0.24);
 
   drawOmegaAxes(view);
   drawConstraintCurve(view);
   drawTrajectory(view);
-  drawOmegaLegend(view);
 }
 
 function clearView(view) {
@@ -450,19 +480,25 @@ function drawBodyAxes(view) {
     ['y', '#2f9d69', new THREE.Vector3(0, 1, 0)],
     ['z', '#3478d9', new THREE.Vector3(0, 0, 1)],
   ];
-  axes.forEach(([label, color, direction]) => {
+  axes.forEach(([key, color, direction]) => {
     const end = direction.clone().multiplyScalar(1.35).applyQuaternion(state.bodyQuaternion);
-    drawArrow3D(view, new THREE.Vector3(0, 0, 0), end, color, label);
+    const start = new THREE.Vector3(0, 0, 0);
+    drawArrow3D(view, start, end, color);
+    positionAxisLabel(view, bodyAxisLabels[key], start, end);
   });
 }
 
 function drawOmegaAxes(view) {
   const length = ellipsoidState.bounds * 1.22;
   [
-    ['ωx', '#d94b4b', new THREE.Vector3(length, 0, 0)],
-    ['ωy', '#2f9d69', new THREE.Vector3(0, length, 0)],
-    ['ωz', '#3478d9', new THREE.Vector3(0, 0, length)],
-  ].forEach(([label, color, end]) => drawArrow3D(view, new THREE.Vector3(0, 0, 0), end, color, label));
+    ['x', '#d94b4b', new THREE.Vector3(length, 0, 0)],
+    ['y', '#2f9d69', new THREE.Vector3(0, length, 0)],
+    ['z', '#3478d9', new THREE.Vector3(0, 0, length)],
+  ].forEach(([key, color, end]) => {
+    const start = new THREE.Vector3(0, 0, 0);
+    drawArrow3D(view, start, end, color);
+    positionAxisLabel(view, omegaAxisLabels[key], start, end);
+  });
 }
 
 function drawEllipsoidSurface(view, axes, color, alpha) {
@@ -599,31 +635,6 @@ function drawTrajectory(view) {
   ctx.restore();
 }
 
-function drawOmegaLegend(view) {
-  const ctx = view.context;
-  const items = [
-    ['#2f9d69', 'T'],
-    ['#3478d9', 'L'],
-    ['#d16b31', 'ω'],
-  ];
-  const x = 16;
-  const y = view.height - 26;
-
-  ctx.save();
-  ctx.font = '600 12px system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
-  ctx.textBaseline = 'middle';
-  items.forEach(([color, label], index) => {
-    const offset = index * 42;
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(x + offset, y, 4, 0, TWO_PI);
-    ctx.fill();
-    ctx.fillStyle = '#526064';
-    ctx.fillText(label, x + offset + 8, y);
-  });
-  ctx.restore();
-}
-
 function drawProjectedPolyline(view, points) {
   if (points.length < 2) return;
 
@@ -647,7 +658,7 @@ function drawProjectedLine(view, start, end) {
   ctx.stroke();
 }
 
-function drawArrow3D(view, start, end, color, label) {
+function drawArrow3D(view, start, end, color) {
   const ctx = view.context;
   const a = projectPoint(view, start);
   const b = projectPoint(view, end);
@@ -670,9 +681,18 @@ function drawArrow3D(view, start, end, color, label) {
   ctx.closePath();
   ctx.fill();
 
-  ctx.font = '600 13px system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
-  ctx.fillText(label, b.x + Math.cos(angle) * 10, b.y + Math.sin(angle) * 10);
   ctx.restore();
+}
+
+function positionAxisLabel(view, label, start, end) {
+  const a = projectPoint(view, start);
+  const b = projectPoint(view, end);
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const length = Math.hypot(dx, dy) || 1;
+
+  label.style.left = `${b.x + (dx / length) * 15}px`;
+  label.style.top = `${b.y + (dy / length) * 15}px`;
 }
 
 function projectPoint(view, point) {

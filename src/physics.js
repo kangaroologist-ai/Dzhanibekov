@@ -5,9 +5,9 @@ export const INERTIA = Object.freeze({
 });
 
 export const PRESETS = Object.freeze({
-  middle: { x: 0.04, y: 2.15, z: 0.06 },
-  min: { x: 2.05, y: 0.04, z: 0.04 },
-  max: { x: 0.04, y: 0.04, z: 1.85 },
+  middle: { x: 0.04, y: 4.3, z: 0.06 },
+  min: { x: 2.05, y: 0.08, z: 0.08 },
+  max: { x: 0.08, y: 0.08, z: 1.85 },
 });
 
 export function eulerDerivative(omega, inertia = INERTIA) {

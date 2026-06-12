@@ -29,18 +29,16 @@ button {
 
 #app {
   display: grid;
-  grid-template-columns: minmax(310px, 360px) 1fr;
+  grid-template-columns: minmax(300px, 340px) 1fr;
   min-height: 100vh;
-  background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0) 34%),
-    #eef2f1;
+  background: #eef2f1;
 }
 
 .control-panel {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding: 24px;
+  gap: 14px;
+  padding: 20px;
   border-right: 1px solid #d7dfdc;
   background: rgba(250, 252, 251, 0.92);
   overflow-y: auto;
@@ -84,8 +82,7 @@ h1 {
 }
 
 .control-section,
-.metric-section,
-.equation-panel {
+.metric-section {
   border: 1px solid #d7dfdc;
   border-radius: 8px;
   background: #ffffff;
@@ -116,18 +113,19 @@ h1 {
   gap: 10px;
 }
 
-.vector-inputs label,
-.range-control {
+.vector-inputs label {
   display: grid;
   gap: 8px;
 }
 
-.vector-inputs span,
-.range-control span,
-.switch-row span {
+.vector-inputs span {
   color: #536064;
   font-size: 12px;
   font-weight: 600;
+}
+
+.vector-inputs .omega-label .katex {
+  font-size: 16px;
 }
 
 .vector-inputs input {
@@ -193,36 +191,6 @@ h1 {
   height: 18px;
 }
 
-.range-control {
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  margin-top: 16px;
-}
-
-.range-control input {
-  grid-column: 1 / -1;
-  accent-color: #2f7f6f;
-}
-
-.range-control strong {
-  color: #263033;
-  font-size: 12px;
-}
-
-.switch-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.switch-row input {
-  width: 42px;
-  height: 22px;
-  accent-color: #2f7f6f;
-}
-
 .inertia-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -256,12 +224,7 @@ h1 {
   padding: 10px;
 }
 
-.equation-panel {
-  display: grid;
-  gap: 6px;
-  padding: 14px 16px;
-  color: #354145;
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+.metric .ratio-label .katex {
   font-size: 12px;
 }
 
@@ -277,7 +240,8 @@ h1 {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   min-width: 0;
-  min-height: calc(100vh - 36px);
+  height: calc(100vh - 36px);
+  min-height: 560px;
   border: 1px solid #d3ddda;
   border-radius: 8px;
   overflow: hidden;
@@ -333,9 +297,16 @@ h1 {
   background: #3478d9;
 }
 
+.math-inline .katex,
+.view-header .katex,
+.axis-key .katex {
+  font-size: 1em;
+}
+
 .viewport {
   position: relative;
-  min-height: 360px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .viewport canvas {
@@ -343,6 +314,42 @@ h1 {
   width: 100%;
   height: 100%;
   touch-action: none;
+}
+
+.canvas-math-label,
+.equation-overlay {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.canvas-math-label {
+  transform: translate(-50%, -50%);
+  color: #2b3538;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.canvas-math-label .katex {
+  font-size: 13px;
+}
+
+.equation-overlay {
+  left: 50%;
+  bottom: 14px;
+  max-width: calc(100% - 32px);
+  transform: translateX(-50%);
+  color: #334044;
+  text-align: center;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+  overflow-x: auto;
+}
+
+.equation-overlay .katex-display {
+  margin: 0;
+}
+
+.equation-overlay .katex {
+  font-size: 0.94rem;
 }
 
 @media (max-width: 1120px) {
@@ -360,7 +367,8 @@ h1 {
   }
 
   .view {
-    min-height: 560px;
+    height: 560px;
+    min-height: 0;
   }
 }
 
@@ -377,7 +385,7 @@ h1 {
   }
 
   .view {
-    min-height: 430px;
+    height: 430px;
   }
 
   .view-header {
