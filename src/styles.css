@@ -1,0 +1,387 @@
+:root {
+  color: #1d2528;
+  background: #eef2f1;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  border: 0;
+}
+
+#app {
+  display: grid;
+  grid-template-columns: minmax(310px, 360px) 1fr;
+  min-height: 100vh;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0) 34%),
+    #eef2f1;
+}
+
+.control-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 24px;
+  border-right: 1px solid #d7dfdc;
+  background: rgba(250, 252, 251, 0.92);
+  overflow-y: auto;
+}
+
+.app-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, transparent 37%, #2f9d69 37% 63%, transparent 63%),
+    linear-gradient(0deg, transparent 37%, #d16b31 37% 63%, transparent 63%),
+    #e9efec;
+  border: 1px solid #cdd8d3;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 20px;
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.app-title p,
+.view-header span,
+.section-heading span,
+.metric span {
+  color: #667377;
+  font-size: 12px;
+}
+
+.control-section,
+.metric-section,
+.equation-panel {
+  border: 1px solid #d7dfdc;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.control-section {
+  padding: 16px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.section-heading h2,
+.view-header h2 {
+  color: #263033;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.vector-inputs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.vector-inputs label,
+.range-control {
+  display: grid;
+  gap: 8px;
+}
+
+.vector-inputs span,
+.range-control span,
+.switch-row span {
+  color: #536064;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.vector-inputs input {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 8px;
+  border: 1px solid #cdd8d3;
+  border-radius: 6px;
+  color: #1d2528;
+  background: #f7f9f8;
+}
+
+.preset-row,
+.button-row {
+  display: flex;
+  gap: 8px;
+}
+
+.preset-row {
+  margin-top: 12px;
+}
+
+.preset-button {
+  flex: 1;
+  min-height: 34px;
+  border-radius: 6px;
+  color: #4f5d61;
+  background: #eef3f1;
+  cursor: pointer;
+}
+
+.preset-button.active {
+  color: #ffffff;
+  background: #2f7f6f;
+}
+
+.primary-button,
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.primary-button {
+  flex: 1;
+  gap: 8px;
+  color: #ffffff;
+  background: #2f7f6f;
+}
+
+.icon-button {
+  width: 44px;
+  color: #263033;
+  background: #e7eeeb;
+}
+
+.primary-button svg,
+.icon-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.range-control {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.range-control input {
+  grid-column: 1 / -1;
+  accent-color: #2f7f6f;
+}
+
+.range-control strong {
+  color: #263033;
+  font-size: 12px;
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.switch-row input {
+  width: 42px;
+  height: 22px;
+  accent-color: #2f7f6f;
+}
+
+.inertia-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.inertia-grid div,
+.metric {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  border-radius: 7px;
+  background: #f4f7f6;
+}
+
+.inertia-grid span {
+  color: #667377;
+  font-size: 12px;
+}
+
+.inertia-grid strong,
+.metric strong {
+  color: #1d2528;
+  font-size: 16px;
+}
+
+.metric-section {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 10px;
+}
+
+.equation-panel {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  color: #354145;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+}
+
+.stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.18fr) minmax(360px, 0.82fr);
+  gap: 18px;
+  min-width: 0;
+  padding: 18px;
+}
+
+.view {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-width: 0;
+  min-height: calc(100vh - 36px);
+  border: 1px solid #d3ddda;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.view-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 64px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #dce4e1;
+  background: #fbfcfc;
+}
+
+.view-header > div {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.view-header span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.axis-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+}
+
+.axis-key b {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.axis-key .x {
+  background: #d94b4b;
+}
+
+.axis-key .y {
+  background: #2f9d69;
+}
+
+.axis-key .z {
+  background: #3478d9;
+}
+
+.viewport {
+  position: relative;
+  min-height: 360px;
+}
+
+.viewport canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+@media (max-width: 1120px) {
+  #app {
+    grid-template-columns: 1fr;
+  }
+
+  .control-panel {
+    border-right: 0;
+    border-bottom: 1px solid #d7dfdc;
+  }
+
+  .stage {
+    grid-template-columns: 1fr;
+  }
+
+  .view {
+    min-height: 560px;
+  }
+}
+
+@media (max-width: 620px) {
+  .control-panel,
+  .stage {
+    padding: 14px;
+  }
+
+  .vector-inputs,
+  .inertia-grid,
+  .metric-section {
+    grid-template-columns: 1fr;
+  }
+
+  .view {
+    min-height: 430px;
+  }
+
+  .view-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

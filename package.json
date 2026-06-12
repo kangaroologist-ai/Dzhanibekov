@@ -1,0 +1,16 @@
+{
+  "name": "dzhanibekov-t-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "check:physics": "node scripts/check-conservation.mjs"
+  },
+  "dependencies": {
+    "lucide": "^0.468.0",
+    "three": "^0.171.0",
+    "vite": "^6.0.3"
+  }
+}

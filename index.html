@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>T 字物体转动演示</title>
+  </head>
+  <body>
+    <main id="app">
+      <aside class="control-panel" aria-label="模拟控制">
+        <header class="app-title">
+          <span class="title-mark"></span>
+          <div>
+            <h1>T 字物体转动</h1>
+            <p>自由刚体 Euler 方程</p>
+          </div>
+        </header>
+
+        <section class="control-section">
+          <div class="section-heading">
+            <h2>初始角速度</h2>
+            <span>rad/s</span>
+          </div>
+          <div class="vector-inputs">
+            <label>
+              <span>ωx</span>
+              <input id="omegaX" type="number" step="0.01" value="0.04" />
+            </label>
+            <label>
+              <span>ωy</span>
+              <input id="omegaY" type="number" step="0.01" value="2.15" />
+            </label>
+            <label>
+              <span>ωz</span>
+              <input id="omegaZ" type="number" step="0.01" value="0.06" />
+            </label>
+          </div>
+          <div class="preset-row" role="group" aria-label="预设">
+            <button class="preset-button active" data-preset="middle">中间轴</button>
+            <button class="preset-button" data-preset="min">最小轴</button>
+            <button class="preset-button" data-preset="max">最大轴</button>
+          </div>
+        </section>
+
+        <section class="control-section">
+          <div class="section-heading">
+            <h2>模拟</h2>
+            <span id="simTime">t = 0.00 s</span>
+          </div>
+          <div class="button-row">
+            <button id="playPause" class="primary-button">
+              <i data-lucide="pause"></i>
+              <span>暂停</span>
+            </button>
+            <button id="resetSimulation" class="icon-button" aria-label="应用初值并重置">
+              <i data-lucide="rotate-ccw"></i>
+            </button>
+          </div>
+          <label class="range-control">
+            <span>速度倍率</span>
+            <strong id="speedValue">1.0×</strong>
+            <input id="speedSlider" type="range" min="0.1" max="3" step="0.1" value="1" />
+          </label>
+          <label class="range-control">
+            <span>轨迹长度</span>
+            <strong id="trailValue">2200</strong>
+            <input id="trailSlider" type="range" min="400" max="5000" step="100" value="2200" />
+          </label>
+          <label class="switch-row">
+            <span>显示守恒椭球</span>
+            <input id="ellipsoidToggle" type="checkbox" checked />
+          </label>
+        </section>
+
+        <section class="control-section">
+          <div class="section-heading">
+            <h2>固定惯量张量</h2>
+            <span>主轴系</span>
+          </div>
+          <div class="inertia-grid">
+            <div><span>I1</span><strong>1.00</strong></div>
+            <div><span>I2</span><strong>2.00</strong></div>
+            <div><span>I3</span><strong>3.20</strong></div>
+          </div>
+        </section>
+
+        <section class="metric-section" aria-label="守恒量">
+          <div class="metric">
+            <span>动能漂移</span>
+            <strong id="energyDrift">0.00 ppm</strong>
+          </div>
+          <div class="metric">
+            <span>角动量漂移</span>
+            <strong id="momentumDrift">0.00 ppm</strong>
+          </div>
+          <div class="metric">
+            <span>L² / 2T</span>
+            <strong id="ratioValue">2.00</strong>
+          </div>
+          <div class="metric">
+            <span>中间轴偏转</span>
+            <strong id="flipAngle">0°</strong>
+          </div>
+        </section>
+
+        <section class="equation-panel" aria-label="方程">
+          <p>I1ω̇1 = (I2 - I3)ω2ω3</p>
+          <p>I2ω̇2 = (I3 - I1)ω3ω1</p>
+          <p>I3ω̇3 = (I1 - I2)ω1ω2</p>
+        </section>
+      </aside>
+
+      <section class="stage">
+        <div class="view view-main">
+          <div class="view-header">
+            <div>
+              <h2>刚体姿态</h2>
+              <span id="omegaReadout">ω = (0.04, 2.15, 0.06)</span>
+            </div>
+            <span class="axis-key"><b class="x"></b>x <b class="y"></b>y <b class="z"></b>z</span>
+          </div>
+          <div id="bodyViewport" class="viewport"></div>
+        </div>
+
+        <div class="view view-phase">
+          <div class="view-header">
+            <div>
+              <h2>角速度空间</h2>
+              <span>动能椭球 ∩ 角动量椭球</span>
+            </div>
+            <button id="focusTrajectory" class="icon-button" aria-label="聚焦轨迹">
+              <i data-lucide="crosshair"></i>
+            </button>
+          </div>
+          <div id="omegaViewport" class="viewport"></div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
